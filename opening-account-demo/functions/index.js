@@ -39,10 +39,10 @@ const app = dialogflow({debug: true});
 // Define a mapping of fake color strings to basic card objects.
 const colorMap = {
   'indigo taco': new BasicCard({
-    title: 'Indigo Taco',
+    title: 'Supreme',
     image: {
-      url: 'https://storage.googleapis.com/material-design/publish/material_v_12/assets/0BxFyKV4eeNjDN1JRbF9ZMHZsa1k/style-color-uiapplication-palette1.png',
-      accessibilityText: 'Indigo Taco Color',
+      url: 'https://fashionista.com/.image/c_limit%2Ccs_srgb%2Cq_auto:good%2Cw_1080/MTUwNzQ3MjI2OTI5NDM5OTYw/stockx-supreme.webp',
+      accessibilityText: 'Now 20% off',
     },
     display: 'WHITE',
   }),
@@ -55,10 +55,10 @@ const colorMap = {
     display: 'WHITE',
   }),
   'blue grey coffee': new BasicCard({
-    title: 'Blue Grey Coffee',
+    title: 'fast loan',
     image: {
-      url: 'https://storage.googleapis.com/material-design/publish/material_v_12/assets/0BxFyKV4eeNjDZUdpeURtaTUwLUk/style-color-colorsystem-gray-secondary-161116.png',
-      accessibilityText: 'Blue Grey Coffee Color',
+      url: 'https://rxchange.s3.amazonaws.com/blog_contents/blog_image/2901488792284loan%20approved%20with%20no%20credit%20history.jpg',
+      accessibilityText: 'Fast loan',
     },
     display: 'WHITE',
   }),
@@ -90,6 +90,7 @@ app.intent('actions_intent_PERMISSION', (conv, params, permissionGranted) => {
     // If the user denied our request, go ahead with the conversation.
     conv.ask(`OK, bye`);
   } else {
+    
     // If the user accepted our request, store their name in
     // the 'conv.data' object for the duration of the conversation.
     conv.data.userName = conv.user.name.display;
@@ -102,14 +103,13 @@ app.intent('actions_intent_PERMISSION', (conv, params, permissionGranted) => {
 });
 
 
+  const SELECTION_KEY_ONE='You selected the first item';
+  const SELECTION_KEY_GOOGLE_HOME = 'You selected the Google Home!';
+  const SELECTION_KEY_GOOGLE_PIXEL = 'You selected the Google Pixel!';
 // Handle the Dialogflow intent named 'actions_intent_PERMISSION'. If user
 // agreed to PERMISSION prompt, then boolean value 'permissionGranted' is true.
 app.intent('show the promotion list', (conv, {business}) => {
 
-
-  const SELECTION_KEY_ONE='You selected the first item';
-  const SELECTION_KEY_GOOGLE_HOME = 'You selected the Google Home!';
-  const SELECTION_KEY_GOOGLE_PIXEL = 'You selected the Google Pixel!';
   const service = business;
   conv.ask(` ${service} `);
 
@@ -163,38 +163,35 @@ app.intent('show the promotion list', (conv, {business}) => {
       },
     },
   }));
- 
 
+  });
+
+
+  app.intent('show the best loan', (conv, {loan}) => {
+
+  const service = loan;
+  conv.ask(` ${service} `);
+  conv.ask(`Here's the loan information`, colorMap['blue grey coffee']);
 });
 
+ const SELECTED_ITEM_RESPONSES = {
+  [SELECTION_KEY_ONE]: 'You selected the first item',
+  [SELECTION_KEY_GOOGLE_HOME]: 'You selected the Google Home!',
+  [SELECTION_KEY_GOOGLE_PIXEL]: 'You selected the Google Pixel!',
+};
 
-
-
-// Handle the Dialogflow intent named 'favorite color'.
-// The intent collects a parameter named 'color'.
-app.intent('favorite color', (conv, {color}) => {
-  const luckyNumber = color.length;
-  const audioSound = 'https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg';
-  if (conv.data.userName) {
-    // If we collected user name previously, address them by name and use SSML
-    // to embed an audio snippet in the response.
-    conv.ask(`<speak>${conv.data.userName}, your lucky number is ` +
-      `${luckyNumber}<audio src="${audioSound}"></audio>.` +
-      `Would you like to hear some fake colors?</speak>`);
-  } else {
-    conv.ask(`<speak>Your lucky number is ${luckyNumber}` +
-      `<audio src="${audioSound}"></audio>.` +
-      `Would you like to hear some fake colors?</speak>`);
+app.intent('actions.intent.OPTION', (conv, params, option) => {
+  let response = 'You did not select any item';
+  if (option && SELECTED_ITEM_RESPONSES.hasOwnProperty(option)) {
+    response = SELECTED_ITEM_RESPONSES[option];
   }
+  //conv.ask(response);
+  conv.ask(`Here's the information`, colorMap['indigo taco']);
+  conv.ask(new Suggestions('super saving loan!!'));
+  conv.ask(new Suggestions('fast loan today'));
+  conv.ask(new Suggestions('super low interests loan'));
+  //conv.close(`Thank you for using our OCBC Assistant`);
 });
-
-// Handle the Dialogflow intent named 'favorite fake color'.
-// The intent collects a parameter named 'fakeColor'.
-app.intent('favorite fake color', (conv, {fakeColor}) => {
-  // Present user with the corresponding basic card and end the conversation.
-  conv.close(`Here's the color`, colorMap[fakeColor]);
-});
-
 
 // Set the DialogflowApp object to handle the HTTPS POST request.
 exports.dialogflowFirebaseFulfillment = functions.https.onRequest(app);
