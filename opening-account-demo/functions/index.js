@@ -19,7 +19,16 @@ const {
   dialogflow,
   BasicCard,
   Permission,
+  Suggestions,
+  Carousel,
+  Image,
 } = require('actions-on-google');
+
+//const SELECTED_ITEM_RESPONSES = {
+//  [SELECTION_KEY_ONE]: 'You selected the first item',
+//  [SELECTION_KEY_GOOGLE_HOME]: 'You selected the Google Home!',
+//  [SELECTION_KEY_GOOGLE_PIXEL]: 'You selected the Google Pixel!',
+//};
 
 // Import the firebase-functions package for deployment.
 const functions = require('firebase-functions');
@@ -59,24 +68,107 @@ const colorMap = {
 app.intent('Default Welcome Intent', (conv) => {
   // Asks the user's permission to know their name, for personalization.
   conv.ask(new Permission({
-    context: 'Hi there, to get to know you better',
+    context: 'Hi there, may I access your account?',
     permissions: 'NAME',
   }));
+
 });
+
+// Handle the Dialogflow intent named 'take a photo for your ID'.
+//app.intent('take a photo for your ID', (conv) => {
+  // Asks the user's permission to know their name, for personalization.
+//  conv.ask(new Permission({
+//    context: 'Hi there, to get to know you better',
+//    permissions: 'NAME',
+//  }));
+//});
 
 // Handle the Dialogflow intent named 'actions_intent_PERMISSION'. If user
 // agreed to PERMISSION prompt, then boolean value 'permissionGranted' is true.
 app.intent('actions_intent_PERMISSION', (conv, params, permissionGranted) => {
   if (!permissionGranted) {
     // If the user denied our request, go ahead with the conversation.
-    conv.ask(`OK, no worries. What's your favorite color?`);
+    conv.ask(`OK, bye`);
   } else {
     // If the user accepted our request, store their name in
     // the 'conv.data' object for the duration of the conversation.
     conv.data.userName = conv.user.name.display;
-    conv.ask(`Thanks, ${conv.data.userName}. What's your favorite color?`);
+    conv.ask(`Thanks, ${conv.data.userName}. Welcome to OCBC Assistant, How Can I help you?`);
+    //conv.ask('Hi there, Welcome to OCBC Assistant, How Can I help you?')
+    conv.ask(new Suggestions('insurance'));
+    conv.ask(new Suggestions('loan'));
+    conv.ask(new Suggestions('promotion'));
   }
 });
+
+
+// Handle the Dialogflow intent named 'actions_intent_PERMISSION'. If user
+// agreed to PERMISSION prompt, then boolean value 'permissionGranted' is true.
+app.intent('show the promotion list', (conv, {business}) => {
+
+
+  const SELECTION_KEY_ONE='You selected the first item';
+  const SELECTION_KEY_GOOGLE_HOME = 'You selected the Google Home!';
+  const SELECTION_KEY_GOOGLE_PIXEL = 'You selected the Google Pixel!';
+  const service = business;
+  conv.ask(` ${service} `);
+
+  // Create a carousel
+  
+  conv.ask(new Carousel({
+    items: {
+      // Add the first item to the carousel
+      [SELECTION_KEY_ONE]: {
+        synonyms: [
+        'synonym of title 1',
+        'synonym of title 2',
+        'synonym of title 3',
+        ],
+      title: 'Title of First Carousel Item',
+      description: 'This is a description of a carousel item.',
+      image: new Image({
+        url: 'https://storage.googleapis.com/material-design/publish/material_v_12/assets/0BxFyKV4eeNjDbFVfTXpoaEE5Vzg/style-color-uiapplication-palette2.png',
+        alt: 'Image alternate text',
+      }),
+      },
+
+          // Add the second item to the carousel
+      [SELECTION_KEY_GOOGLE_HOME]: {
+        synonyms: [
+        'Google Home Assistant',
+        'Assistant on the Google Home',
+        ],
+        title: 'Google Home',
+        description: 'Google Home is a voice-activated speaker powered by ' +
+        'the Google Assistant.',
+        image: new Image({
+          url: 'https://storage.googleapis.com/material-design/publish/material_v_12/assets/0BxFyKV4eeNjDbFVfTXpoaEE5Vzg/style-color-uiapplication-palette2.png',
+          alt: 'Google Home',
+      }),
+      },
+
+          // Add third item to the carousel
+      [SELECTION_KEY_GOOGLE_PIXEL]: {
+        synonyms: [
+          'Google Pixel XL',
+          'Pixel',
+          'Pixel XL',
+        ],
+        title: 'Google Pixel',
+        description: 'Pixel. Phone by Google.',
+        image: new Image({
+          url: 'https://storage.googleapis.com/material-design/publish/material_v_12/assets/0BxFyKV4eeNjDbFVfTXpoaEE5Vzg/style-color-uiapplication-palette2.png',
+          alt: 'Google Pixel',
+        }),
+      },
+    },
+  }));
+ 
+
+});
+
+
+
 
 // Handle the Dialogflow intent named 'favorite color'.
 // The intent collects a parameter named 'color'.
@@ -102,6 +194,7 @@ app.intent('favorite fake color', (conv, {fakeColor}) => {
   // Present user with the corresponding basic card and end the conversation.
   conv.close(`Here's the color`, colorMap[fakeColor]);
 });
+
 
 // Set the DialogflowApp object to handle the HTTPS POST request.
 exports.dialogflowFirebaseFulfillment = functions.https.onRequest(app);
