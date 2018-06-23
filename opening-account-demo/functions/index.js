@@ -157,14 +157,14 @@ app.intent('show the promotion list', (conv, {business}) => {
   });
 
 
-  app.intent('show the best loan', (conv, {loan}) => {
+app.intent('show the best loan', (conv, {loan}) => {
 
   const service = loan;
   conv.ask(` ${service} `);
   conv.ask(`Here's the loan information`, map['loan']);
 });
 
- const SELECTED_ITEM_RESPONSES = {
+const SELECTED_ITEM_RESPONSES = {
   [SELECTION_KEY_ONE]: 'You selected the first item',
   [SELECTION_KEY_GOOGLE_HOME]: 'You selected the Google Home!',
   [SELECTION_KEY_GOOGLE_PIXEL]: 'You selected the Google Pixel!',
@@ -177,7 +177,7 @@ app.intent('actions.intent.OPTION', (conv, params, option) => {
   }
 
   conv.ask(`Here's the information`, map['supreme']);
-  conv.ask(new Suggestions('super saving loan!!'));
+  conv.ask(new Suggestions('super saving loan'));
   conv.ask(new Suggestions('fast loan today'));
   conv.ask(new Suggestions('super low interests loan'));
   
@@ -185,3 +185,5 @@ app.intent('actions.intent.OPTION', (conv, params, option) => {
 
 // Set the DialogflowApp object to handle the HTTPS POST request.
 exports.dialogflowFirebaseFulfillment = functions.https.onRequest(app);
+
+
