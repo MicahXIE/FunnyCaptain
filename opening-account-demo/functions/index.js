@@ -32,7 +32,7 @@ const app = dialogflow({debug: true});
 
 // Define a mapping of fake color strings to basic card objects.
 const map = {
-  'supreme': new BasicCard({
+  'Supreme': new BasicCard({
     title: 'Supreme',
     image: {
       url: 'https://fashionista.com/.image/c_limit%2Ccs_srgb%2Cq_auto:good%2Cw_1080/MTUwNzQ3MjI2OTI5NDM5OTYw/stockx-supreme.webp',
@@ -40,7 +40,7 @@ const map = {
     },
     display: 'WHITE',
   }),
-  'pink unicorn': new BasicCard({
+  'LOUIS VUITTON': new BasicCard({
     title: 'Pink Unicorn',
     image: {
       url: 'https://storage.googleapis.com/material-design/publish/material_v_12/assets/0BxFyKV4eeNjDbFVfTXpoaEE5Vzg/style-color-uiapplication-palette2.png',
@@ -48,11 +48,38 @@ const map = {
     },
     display: 'WHITE',
   }),
-  'loan': new BasicCard({
+  'Google Pixel': new BasicCard({
     title: 'fast loan',
     image: {
       url: 'https://rxchange.s3.amazonaws.com/blog_contents/blog_image/2901488792284loan%20approved%20with%20no%20credit%20history.jpg',
       accessibilityText: 'Fast loan',
+    },
+    display: 'WHITE',
+  }),
+};
+
+const loanmap = {
+  'super saving loan': new BasicCard({
+    title: 'super saving loan',
+    image: {
+      url: 'https://fashionista.com/.image/c_limit%2Ccs_srgb%2Cq_auto:good%2Cw_1080/MTUwNzQ3MjI2OTI5NDM5OTYw/stockx-supreme.webp',
+      accessibilityText: 'Now 20% off',
+    },
+    display: 'WHITE',
+  }),
+  'fast loan today': new BasicCard({
+    title: 'fast loan today',
+    image: {
+      url: 'https://storage.googleapis.com/material-design/publish/material_v_12/assets/0BxFyKV4eeNjDbFVfTXpoaEE5Vzg/style-color-uiapplication-palette2.png',
+      accessibilityText: 'fast loan today',
+    },
+    display: 'WHITE',
+  }),
+  'super low interests loan': new BasicCard({
+    title: 'super low interests loan',
+    image: {
+      url: 'https://rxchange.s3.amazonaws.com/blog_contents/blog_image/2901488792284loan%20approved%20with%20no%20credit%20history.jpg',
+      accessibilityText: 'super low interests loan',
     },
     display: 'WHITE',
   }),
@@ -157,11 +184,11 @@ app.intent('show the promotion list', (conv, {business}) => {
   });
 
 
-app.intent('show the best loan', (conv, {loan}) => {
+app.intent('show the best loan', (conv, {choice}) => {
 
-  const service = loan;
+  const service = choice;
   conv.ask(` ${service} `);
-  conv.ask(`Here's the loan information`, map['loan']);
+  conv.ask(`Here's the loan information`, loanmap[service]);
 });
 
 const SELECTED_ITEM_RESPONSES = {
@@ -170,13 +197,22 @@ const SELECTED_ITEM_RESPONSES = {
   [SELECTION_KEY_GOOGLE_PIXEL]: 'You selected the Google Pixel!',
 };
 
+const SELECTED_ITEM_TITLES = {
+  [SELECTION_KEY_ONE]: 'Supreme',
+  [SELECTION_KEY_GOOGLE_HOME]: 'LOUIS VUITTON',
+  [SELECTION_KEY_GOOGLE_PIXEL]: 'Google Pixel',
+};
+
+
 app.intent('actions.intent.OPTION', (conv, params, option) => {
   let response = 'You did not select any item';
   if (option && SELECTED_ITEM_RESPONSES.hasOwnProperty(option)) {
     response = SELECTED_ITEM_RESPONSES[option];
   }
 
-  conv.ask(`Here's the information`, map['supreme']);
+  const value = SELECTED_ITEM_TITLES[option];
+  conv.ask(` ${value} `);
+  conv.ask(`Here's the information`, map[value]);
   conv.ask(new Suggestions('super saving loan'));
   conv.ask(new Suggestions('fast loan today'));
   conv.ask(new Suggestions('super low interests loan'));
